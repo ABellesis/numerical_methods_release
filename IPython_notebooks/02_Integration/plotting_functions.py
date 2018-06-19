@@ -2,11 +2,9 @@ import numpy as np
 import sympy as syp
 import matplotlib.pyplot as plt
 import matplotlib
-
 def midpoint(a,b,f):  # midpont rule evaluation of the function, called in Cmidpoint below
     mp=(a+b)/2.0
     return (b-a)*f(mp)
-
 def Trapezoid(f,a,b,n):
     h=(b-a)/float(n)  # determines the width of the trapezoid for which the evaluation of f(x) will be calculated
     estimate=0
@@ -15,7 +13,6 @@ def Trapezoid(f,a,b,n):
         estimate+=f(a+i*h) # sums f(x) each iteration, resulting in an estimate of the integration
     estimate+=f(b)/2.0  # the final evaluation of f(x)
     return estimate
-
 def plot_midpoint_func(xminimum,xmaximum,f,subsections):
     x_data = np.linspace(xminimum, xmaximum, 101)
     try:
@@ -217,12 +214,4 @@ def sympy2numpy_function_converter(f,variable):
     f_temp = syp.lambdify(variable,f(variable),"numpy")
     return f_temp
 
-def interactive_plot_settings(ax1,ax2,xmin,xmax):
-    ymin =-2
-    ymax = 2
-    ax1.plot([xmin, xmin], [ymin, ymax],color='black',linestyle='--')
-    ax1.plot([xmax, xmax], [ymin, ymax],color='black',linestyle='--')
-    ax1.plot([xmin, xmax], [0, 0],color='black',linestyle='--')
-    ax2.plot([xmin, xmin], [ymin, ymax],color='black',linestyle='--')
-    ax2.plot([xmax, xmax], [ymin, ymax],color='black',linestyle='--')
-    ax2.plot([xmin, xmax], [0, 0],color='black',linestyle='--')
+# plot_midpoint_func(0,2*np.pi,f,8)
