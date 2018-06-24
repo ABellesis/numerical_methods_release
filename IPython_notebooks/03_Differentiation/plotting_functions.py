@@ -7,6 +7,7 @@ from scipy import integrate
 from matplotlib.widgets import Slider, Button
 import scipy.constants as sc
 syp.init_printing(use_unicode=False, wrap_line=False, no_global=True)
+import warnings
 
 def midpoint(a,b,f):  # midpont rule evaluation of the function, called in Cmidpoint below
     mp=(a+b)/2.0
@@ -198,8 +199,8 @@ def plot_fdiff_func(xminimum, xmaximum, f, derivative_f, a, da):
     except:
         y = f(x_data)
         print("y for the try statement  {}".format(y))
-    fd_step_size_result = fd_step_size_check(da)
-    print(fd_step_size_result['message'])
+    #fd_step_size_result = fd_step_size_check(f,da,a)
+    #print(fd_step_size_result['message'])
     yrange = np.max(y) - np.min(y)
     yminimum = np.min(y) - 0.1 * yrange
     ymaximum = np.max(y) + 0.1 * yrange
@@ -211,8 +212,8 @@ def plot_fdiff_func(xminimum, xmaximum, f, derivative_f, a, da):
     plt.plot(x_data, y, color='black', linewidth=2.0)
     plt.plot(x_data, tangent_line(a,f, derivative_f, x_data), color='blue', linestyle='-', linewidth=6.0,label = 'true')
     plt.plot([(a + da), (a + da)], [f((a + da)), f((a + da))],
-             color='blue', markersize=20, marker='.')
-    plt.plot([a, a], [f(a), f(a)], color='red', markersize=10, marker='.')
+             color='red', markersize=20, marker='.')
+    plt.plot([a, a], [f(a), f(a)], color='blue', markersize=20, marker='.')
 
     plt.plot(x_data, secant_line(f, a, (a + da), x_data), color='red', linewidth=2.0,label ='approximation')
     plt.legend()
@@ -251,8 +252,8 @@ def plot_cdiff_func(xminimum, xmaximum, f,derivative_f, a, da):
         f_temp=syp.lambdify(x,f(x),"numpy")
         y=f_temp(x_data)
 
-    cd_step_size_result = cd_step_size_check(da)
-    print(cd_step_size_result['message'])
+    #cd_step_size_result = cd_step_size_check(f,da,a)
+    #print(cd_step_size_result['message'])
     yrange = np.max(y) - np.min(y)
     yminimum = np.min(y) - 0.1 * yrange
     ymaximum = np.max(y) + 0.1 * yrange
@@ -261,17 +262,15 @@ def plot_cdiff_func(xminimum, xmaximum, f,derivative_f, a, da):
     plt.xlim(xminimum, xmaximum)
     plt.ylim(yminimum, ymaximum)
     plt.grid(True)
-
+    plt.plot([a, a], [f(a), f(a)], color='blue', markersize=20, marker='.')
+    plt.plot(x_data, tangent_line(1,f,derivative_f, x_data), color='blue', linestyle='-', linewidth=6.0,label = 'true')
     plt.plot(x_data, y, color='black', linewidth=2.0)
     plt.plot(x_data, secant_line(f, (a - da), (a + da), x_data),
-             color='blue', linewidth=6.0, label = 'approximate')
+             color='red', linewidth=2.0, label = 'approximate')
     plt.plot([a + da, a + da], [f(a + da), f(a + da)],
-             color='blue', markersize=20, marker='.')
+             color='red',markersize=20, marker='.')
     plt.plot([a - da, a - da], [f(a - da), f(a - da)],
-             color='blue', markersize=20, marker='.')
-    plt.plot([a, a], [f(a), f(a)], color='red', markersize=10, marker='.')
-
-    plt.plot(x_data, tangent_line(1,f,derivative_f, x_data), color='red', linestyle='-', linewidth=2.0,label = 'true')
+             color='red', markersize=20, marker='.')
     lgd = plt.legend()
     plt.xlabel(u'$x$')
     plt.ylabel(r'f($x$)')
@@ -299,9 +298,25 @@ def analytical_second_derivative(function, real_x):
         print('No analytical gradient exsists')
         return
 
-def fd_step_size_check(h):
+def analytical_third_derivative(function, real_x):
+    try:
+        x = syp.Symbol('x')
+        second_d_function = syp.diff(function(x), x, 3)
+        second_d_functional_function =  syp.lambdify(x, second_d_function, 'numpy')
+        return second_d_functional_function(real_x)
+    except:
+        print('No analytical gradient exsists')
+        return
+    
+def fd_step_size_check(f,h,x):
     step_size_min = np.finfo(float).eps
-    step_size_max = 1e-6 #TODO: make this depend of the function.
+    try:
+        warnings.filterwarnings('error')
+        step_size_max = 2*(np.sqrt(step_size_min))/analytical_third_derivative(f,x)
+    except:
+        warnings.filterwarnings('default')
+        print('Warning: no third derivative, using default max step size of 1e-5 as comparison')
+        step_size_max = 1e-5
     ss_result = False
     if h < step_size_max and h > step_size_min:
         ss_result = True
@@ -332,9 +347,15 @@ def fd_step_size_check(h):
             """
     return {'result':ss_result, 'message':ss_message}
 
-def cd_step_size_check(h):
+def cd_step_size_check(f,h,x):
     step_size_min = np.finfo(float).eps
-    step_size_max = 1e-6 #TODO: make this depend of the function.
+    try:
+        warnings.filterwarnings('error')
+        step_size_max =  ((3*step_size_min)/analytical_third_derivative(f,x))**1/3
+    except:
+        warnings.filterwarnings('default')
+        print('Warning: no third derivative, using default max step size of 1e-5 as comparison')
+        step_size_max = 1e-5
     ss_result = False
     if h < step_size_max and h > step_size_min:
         ss_result = True
@@ -400,7 +421,7 @@ def question_one_check(ans=0):
 def question_two_check(ans=0):
 
         if ans == 4:
-            print("Correct! round-off error is the result of the way numbers\n are stored in the computer! If the step size we use is too small, round-off errors \ncan be blown up in the division involved for differentiation.")
+            print("Correct! By truncating the Taylor series, we are loosing information of higher derivatives. This loss can cause inaccuracies in the approximations of derivatives. This notation represents where the Taylor series is truncated.")
         elif ans ==0:
             print("Please input a valid response")
         else:
