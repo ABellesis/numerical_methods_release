@@ -214,4 +214,60 @@ def sympy2numpy_function_converter(f,variable):
     f_temp = syp.lambdify(variable,f(variable),"numpy")
     return f_temp
 
-# plot_midpoint_func(0,2*np.pi,f,8)
+
+# particle in a box
+def particle_in_a_box(x, level, L):
+    norm = np.sqrt(2.0/L)
+    psi = norm*np.sin(level*np.pi*x/L)
+    return psi
+
+# integration
+def pib_gaussian_quadrature(a, b, f, n, level1, level2, L):
+    '''
+    INPUT
+        a: (float) minimum x-value to evaluate
+        b: (float) maximum x-value to evaluate
+        f: function
+        n: (int) number of points to evaluate
+        level1: (int) level of first wavefunction
+        level2: (int) level of second wavefunction
+    OUPUT
+        returns (float)
+    '''
+    # determination of optimal points and weights for evaluation based on
+    # legendre polynomials
+    x, w = np.polynomial.legendre.leggauss(n)
+    # change of variables for [-1,1] to [a,b]
+    x = ((b - a) / 2.0) * x + ((b + a) / (2.0))
+    try:
+        estimate = ((b - a) / 2.0) * np.sum(w * f(x,level1,L) * f(x,level2,L))
+    except:
+        f_temp = pf.sympy2numpy_function_converter(f,x)
+        estimate = ((b - a) / 2.0) * np.sum(w * f_temp(x,level1,L) * f_temp(x,level2,L))
+    return estimate
+
+def plyt(level1,level2,L,num_pts):
+# calculate eigenfunctions
+    a = 0
+    b = L
+    fig, (ax,ax1) = plt.subplots(2,1,sharey=True,figsize = (8,7),facecolor='white')
+    plt.grid(True)
+    ax.set_xlabel('x')
+    ax.set_ylabel('$\phi$')
+    ax1.set_xlabel('x')
+    ax1.set_ylabel('$overlap$')
+    plt.subplots_adjust(bottom=0.3)
+    x=np.linspace(a,b,100)
+    eigenfunction_one = particle_in_a_box(x,level1,L)
+    eigenfunction_two = particle_in_a_box(x,level2,L)
+    # integrate overlap
+    integral_estimator = pib_gaussian_quadrature(a, b, particle_in_a_box, num_pts, level1, level2, L)
+    line, = ax.plot(x, eigenfunction_one)
+    line2, = ax.plot(x, eigenfunction_two)
+    line3, = ax1.plot(x,eigenfunction_one*eigenfunction_two)
+    ymax = ax.set_ylim()[1]
+    overlap_annotation = ax.annotate(r'$\int\  \psi_a \psi_b dx$ = {:.6f}'.format(integral_estimator), xy = (0.7*max(x),0.7*ymax))
+    plt.style.use('matplotlibrc')
+    plt.tight_layout()
+    plt.show()
+
