@@ -41,5 +41,5 @@ def plotf_func(xminimum, xmaximum, f):
     plt.plot(x, y, color='black', linewidth=2.0)
     plt.xlabel(u'$x$')
     plt.ylabel(r'f($x$)')
-    fig.set_tight_layout(True)
+    fig.set_tight_layout(False)
     plt.show()
