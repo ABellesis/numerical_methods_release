@@ -4,12 +4,11 @@ import matplotlib
 import sympy as syp
 import scipy as sp
 from scipy import integrate
-from matplotlib.widgets import Slider, Button
 import scipy.constants as sc
 syp.init_printing(use_unicode=False, wrap_line=False, no_global=True)
 import warnings
 
-def midpoint(a,b,f):  # midpont rule evaluation of the function, called in Cmidpoint below
+def midpoint(a,b,f):  # midpoint rule evaluation of the function, called in Cmidpoint below
     mp=(a+b)/2.0
     return (b-a)*f(mp)
 def Trapezoid(f,a,b,n):
