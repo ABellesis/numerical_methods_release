@@ -421,7 +421,7 @@ def question_one_check(ans=0):
 def question_two_check(ans=0):
 
         if ans == 4:
-            print("Correct! By truncating the Taylor series, we are loosing information of higher derivatives. This loss can cause inaccuracies in the approximations of derivatives. This notation represents where the Taylor series is truncated.")
+            print("Correct! By truncating the Taylor series, we are losing information of higher derivatives. This loss can cause inaccuracies in the approximations of derivatives. This notation represents where the Taylor series is truncated.")
         elif ans ==0:
             print("Please input a valid response")
         else:

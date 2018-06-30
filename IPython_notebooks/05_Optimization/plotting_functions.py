@@ -527,7 +527,13 @@ def HF_gradient(rad_def):
     gradient.append((HF_energy((radius, deformation + h)) - HF_energy((radius , deformation- h))) / (2 * h))
     return np.array(gradient)
 
-
+def question_one_check(ans=0):
+        if ans == 2:
+            print("Correct! The structure with equally spaced hydrogens was higher in energy than the paired hydrogen structure. This indicates that although BFGS located this minimum, it was in fact not the global minimum.")
+        elif ans ==0:
+            print("Please input a valid response")
+        else:
+            print("Incorrect. Please try again.")
     
 if __name__ == "__main__":
     print("This file is contains additional plotting functions. It is not meant to be run independently")
