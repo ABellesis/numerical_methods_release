@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import sympy as syp
 
 def correct_R30(Z,a0,r):
     a = 2.*((Z/(3*a0))**(3./2.))
@@ -43,3 +43,13 @@ def plotf_func(xminimum, xmaximum, f):
     plt.ylabel(r'f($x$)')
     fig.set_tight_layout(False)
     plt.show()
+
+    
+def analytical_first_derivative(function, real_x):
+    try:
+        x = syp.Symbol('x')
+        d_function = syp.diff(function(x), x)
+        d_functional_function =  syp.lambdify(x, d_function, 'numpy')
+        return d_functional_function(real_x)
+    except:
+        return 'No analytical gradient exsists'
