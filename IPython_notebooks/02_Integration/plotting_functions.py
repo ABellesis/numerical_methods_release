@@ -2,7 +2,7 @@ import numpy as np
 import sympy as syp
 import matplotlib.pyplot as plt
 import matplotlib
-def midpoint(a,b,f):  # midpont rule evaluation of the function, called in Cmidpoint below
+def midpoint(a,b,f):  # midpoint rule evaluation of the function, called in Cmidpoint below
     mp=(a+b)/2.0
     return (b-a)*f(mp)
 def Trapezoid(f,a,b,n):
@@ -231,7 +231,7 @@ def pib_gaussian_quadrature(a, b, f, n, level1, level2, L):
         n: (int) number of points to evaluate
         level1: (int) level of first wavefunction
         level2: (int) level of second wavefunction
-    OUPUT
+    OUTPUT
         returns (float)
     '''
     # determination of optimal points and weights for evaluation based on
